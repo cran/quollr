@@ -12,17 +12,7 @@
 #' @return A `ggplot2` layer object.
 #'
 #' @examples
-#' num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-#' y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-#' num_bins_x <- num_bins_list$num_x
-#' num_bins_y <- num_bins_list$num_y
-#' hb_obj <- hex_binning(data = s_curve_noise_umap_scaled,
-#' x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-#' num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-#' buffer_y = NA, hex_size = NA, col_start = "UMAP")
-#' all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-#' counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-#' df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, counts_df = counts_df)
+#' df_bin_centroids <- scurve_model_obj$model_2d |> dplyr::filter(n_h > 10)
 #' ggplot2::ggplot() +
 #' geom_trimesh(data = df_bin_centroids, mapping = ggplot2::aes(x = c_x, y = c_y))
 #'
@@ -61,7 +51,7 @@ GeomTrimesh <- ggplot2::ggproto("GeomTrimesh",
                                   linewidth = 0.5,
                                   size = 0.5,
                                   alpha = NA,
-                                  colour = "#33a02c"
+                                  colour = "#FF7755"
                                 ),
                                 draw_key = ggplot2::draw_key_point,
                                 draw_panel = function(data, panel_scales, coord) {
@@ -75,10 +65,10 @@ GeomTrimesh <- ggplot2::ggproto("GeomTrimesh",
                                   vertices <- tibble::tibble(
                                     x = point_info$x,
                                     y = point_info$y,
-                                    colour = rep("#33a02c", nrow(point_info)),
+                                    colour = rep("#FF7755", nrow(point_info)),
                                     shape = rep(data$shape[1], nrow(point_info)),
                                     size = rep(2, nrow(point_info)),
-                                    fill = rep("#33a02c", nrow(point_info)),
+                                    fill = rep("#FF7755", nrow(point_info)),
                                     alpha = rep(data$alpha[1], nrow(point_info)),
                                     stroke = 0.5,
                                     stringsAsFactors = FALSE

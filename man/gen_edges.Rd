@@ -4,13 +4,15 @@
 \alias{gen_edges}
 \title{Generate edge information}
 \usage{
-gen_edges(tri_object)
+gen_edges(tri_object, a1)
 }
 \arguments{
 \item{tri_object}{The triangular object from which to generate edge information.}
+
+\item{a1}{A numeric value for bin width.}
 }
 \value{
-A data frame containing the edge information, including the from-to
+A tibble that contains the edge information, including the from-to
 relationships and the corresponding x and y coordinates.
 }
 \description{
@@ -19,18 +21,12 @@ including the coordinates of the vertices and the from-to relationships
 between the vertices.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-hb_obj <- hex_binning(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA, col_start = "UMAP")
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, counts_df = counts_df)
-tr1_object <- tri_bin_centroids(hex_df = df_bin_centroids, x = "c_x", y = "c_y")
-gen_edges(tri_object = tr1_object)
+all_centroids_df <- scurve_model_obj$hb_obj$centroids
+counts_data <- scurve_model_obj$hb_obj$std_cts
+umap_with_hb_id <- scurve_model_obj$hb_obj$data_hb_id
+df_bin_centroids <- extract_hexbin_centroids(counts_data = counts_data,
+centroids_data = all_centroids_df)
+tr1_object <- tri_bin_centroids(centroids_data = df_bin_centroids)
+gen_edges(tri_object = tr1_object, a1 = scurve_model_obj$hb_obj$a1)
 
 }

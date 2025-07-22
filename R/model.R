@@ -1,118 +1,70 @@
-#' Construct the 2D model and lift into high-D
+#' Construct the 2-D model and lift into high-dimensions
 #'
 #' This function fits a high-dimensional model using hexagonal bins and provides options
 #' to customize the modeling process, including the choice of bin centroids or bin means,
 #' removal of low-density hexagons, and averaging of high-dimensional data.
 #'
-#' @param training_data A data frame containing the training high-dimensional data.
-#' @param nldr_df_with_id A data frame containing 2D embeddings with a unique identifier.
-#' @param x The name of the column that contains first 2D embeddings component.
-#' @param y The name of the column that contains second 2D embeddings component.
-#' @param num_bins_x Number of bins along the x-axis.
-#' @param num_bins_y Number of bins along the y-axis.
-#' @param x_start Starting point along the x-axis for hexagonal binning.
-#' @param y_start Starting point along the y-axis for hexagonal binning.
-#' @param buffer_x The buffer size along the x-axis.
-#' @param buffer_y The buffer size along the y-axis.
-#' @param hex_size A numeric value that initializes the radius of the outer circle
-#' surrounding the hexagon.
-#' @param is_rm_lwd_hex Logical, indicating whether to remove low-density hexagons
-#' (default is FALSE).
-#' @param benchmark_to_rm_lwd_hex The benchmark value to remove low-density hexagons.
-#' @param col_start_2d The text prefix for columns in the 2D embedding data.
-#' @param col_start_highd The text prefix for columns in the high-dimensional data.
+#' @param highd_data A tibble that contains the high-dimensional data with a unique identifier.
+#' @param nldr_data A tibble that contains the embedding with a unique identifier.
+#' @param b1 (default: 4) A numeric value representing the number of bins along the x axis.
+#' @param q (default: 0.1) A numeric value representing the buffer amount as proportion of data range.
+#' @param benchmark_highdens (default: 5) A numeric value using to filter high-density hexagons.
 #'
-#' @return A list containing the data frame with high-dimensional coordinates
-#' for 2D bin centroids (\code{df_bin}) and the data frame containing
-#' information about hexagonal bin centroids (\code{df_bin_centroids}) in 2D.
+#' @return A list containing a list of a tibble contains scaled first and second columns
+#' of NLDR data, and numeric vectors representing the limits of the original NLDR data (\code{nldr_obj}),
+#' a object that contains hexagonal binning information (\code{hb_obj}),
+#' a tibble with high-dimensional model (\code{model_highd}) and a tibble containing
+#' hexagonal bin centroids in 2-D (\code{model_2d}), and
+#' a tibble that contains the edge information (\code{trimesh_data}).
+#'
+#' @importFrom dplyr bind_cols filter select between
+#' @importFrom stats quantile
 #'
 #' @examples
-#' fit_highd_model(training_data = s_curve_noise_training, x = "UMAP1", y = "UMAP2",
-#' nldr_df_with_id = s_curve_noise_umap_scaled, col_start_2d = "UMAP", col_start_highd = "x")
+#' fit_highd_model(highd_data = scurve, nldr_data = scurve_umap, b1 = 4,
+#' q = 0.1, benchmark_highdens = 5)
 #'
 #' @export
-fit_highd_model <- function(training_data, nldr_df_with_id, x, y, num_bins_x = NA,
-                      num_bins_y = NA, x_start = NA, y_start = NA,
-                      buffer_x = NA, buffer_y = NA,  hex_size = NA,
-                      is_rm_lwd_hex = FALSE, benchmark_to_rm_lwd_hex = NA,
-                      col_start_2d, col_start_highd) {
+fit_highd_model <- function(highd_data, nldr_data, b1 = 4, q = 0.1,
+                            benchmark_highdens = 5) {
 
-  ## If number of bins along the x-axis and/or y-axis is not given
-  if (is.na(num_bins_x) | is.na(num_bins_y)) {
-    ## compute the number of bins along the x-axis
-    bin_list <- calc_bins(data = nldr_df_with_id, x = x, y = y, hex_size = hex_size,
-                          buffer_x = buffer_x, buffer_y = buffer_y)
-    num_bins_x <- bin_list$num_x
-    num_bins_y <- bin_list$num_y
-  }
+  ## To pre-process the data
+  nldr_obj <- gen_scaled_data(nldr_data = nldr_data)
 
   ## Obtain the hexbin object
-  hb_obj <- hex_binning(data = nldr_df_with_id, x = x, y = y, num_bins_x = num_bins_x,
-                        num_bins_y = num_bins_y, x_start = x_start,
-                        y_start = y_start, buffer_x = buffer_x,
-                        buffer_y = buffer_y, hex_size = hex_size,
-                        col_start = col_start_2d)
+  hb_obj <- hex_binning(nldr_obj = nldr_obj, b1 = b1, q = q)
 
-  all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-  counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-  nldr_df_with_hex_id <- as.data.frame(do.call(cbind, hb_obj$data_hb_id))
+  all_centroids_df <- hb_obj$centroids
+  counts_df <- hb_obj$std_cts
 
-  ## To obtain bin centroids
-  df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df,
-                                               counts_df = counts_df)
+  ## To extract all bin centroids with bin counts
+  df_bin_centroids <- extract_hexbin_centroids(centroids_data = all_centroids_df,
+                                               counts_data = counts_df)
 
-  if (isFALSE(is_rm_lwd_hex)) {
-    if (!is.na(benchmark_to_rm_lwd_hex)) {
-      stop("Need to initialise `is_rm_lwd_hex = TRUE`.")
-    }
+  ## Wireframe
+  tr_object <- tri_bin_centroids(centroids_data = df_bin_centroids)
+  trimesh_data <- gen_edges(tri_object = tr_object, a1 = hb_obj$a1) |>
+    dplyr::filter(from_count > benchmark_highdens,
+                  to_count > benchmark_highdens)
 
-  }
-
-
-  ## Do you need to remove low density hexagons?
-  if (isTRUE(is_rm_lwd_hex)) {
-
-    ## if the benchmark value to remove low density hexagons is not provided
-    if (is.na(benchmark_to_rm_lwd_hex)) {
-      ## first quartile used as the default
-      benchmark_to_rm_lwd_hex <- stats::quantile(df_bin_centroids$std_counts,
-                                                 probs = c(0,0.25,0.5,0.75,1))[2]
-    }
-
-    ## Check the benchmark value pass by the function is an acceptable one
-    if (benchmark_to_rm_lwd_hex < min(df_bin_centroids$std_counts)) {
-      stop("Benchmark value to remove low density hexagons is too small.")
-    }
-
-    if (benchmark_to_rm_lwd_hex > max(df_bin_centroids$std_counts)) {
-      stop("Benchmark value to remove low density hexagons is too large.")
-    }
-
-    ## To identify low density hexagons
-    df_bin_centroids_low <- df_bin_centroids |>
-      dplyr::filter(std_counts <= benchmark_to_rm_lwd_hex)
-
-    ## To identify low-density hexagons needed to remove by investigating neighbouring mean density
-    identify_rm_bins <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids,
-                                          num_bins_x = num_bins_x,
-                                          df_bin_centroids_low = df_bin_centroids_low)
-
-    ## To remove low-density hexagons
-    df_bin_centroids <- df_bin_centroids |>
-      filter(!(hexID %in% identify_rm_bins))
-
-  }
-
-  ## To generate a data set with high-D and 2D training data
-  df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), nldr_df_with_hex_id)
+  ## Update the edge indexes to start from 1
+  trimesh_data <- update_trimesh_index(trimesh_data)
 
   ## averaged high-D data
-  df_bin <- avg_highd_data(data = df_all, col_start = col_start_highd)
+  nldr_df_with_hex_id <- hb_obj$data_hb_id
+  model_highd <- avg_highd_data(highd_data = highd_data, scaled_nldr_hexid = nldr_df_with_hex_id)
 
-  ## high-D model only contains the bins in 2D
-  df_bin <- df_bin |>
-    dplyr::filter(hb_id %in% df_bin_centroids$hexID)
+  ## To extract high-densed bins
+  model_2d <- df_bin_centroids |>
+    dplyr::filter(n_h > benchmark_highdens)
 
-  return(list(df_bin = df_bin, df_bin_centroids = df_bin_centroids))
+  model_highd <- model_highd |>
+    dplyr::filter(h %in% model_2d$h)
+
+  cli::cli_alert_success("Model generated successfully!!!")
+
+  return(list(nldr_obj = nldr_obj, hb_obj = hb_obj, model_highd = model_highd,
+              model_2d = model_2d, trimesh_data = trimesh_data))
 
 }
+

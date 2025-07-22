@@ -4,31 +4,25 @@
 \alias{gen_hex_coord}
 \title{Generate hexagonal polygon coordinates}
 \usage{
-gen_hex_coord(centroids_df, hex_size = NA)
+gen_hex_coord(centroids_data, a1)
 }
 \arguments{
-\item{centroids_df}{The dataset with all hexbin ID and centroid coordinates.}
+\item{centroids_data}{The dataset with all hexagonal bin IDs
+and centroid coordinates.}
 
-\item{hex_size}{A numeric value that initializes the radius of the outer
-circle surrounding the hexagon.}
+\item{a1}{The width of the hexagon.}
 }
 \value{
-A list contains polygon id, x and y coordinates (hex_poly_id, x,
-and y respectively) of hexagons.
+A tibble contains hexagon id (\code{h}),
+x and y coordinates (\code{x}, \code{y}) of hexagons.
 }
 \description{
-This function generates the coordinates of hexagons after passing hexagonal centroids.
+This function generates the coordinates of hexagons after passing
+hexagonal centroids.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-centroid_list <- gen_centroids(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA)
-all_centroids_df <- as.data.frame(do.call(cbind, centroid_list))
-gen_hex_coord(centroids_df = all_centroids_df, hex_size = NA)
+width <- scurve_model_obj$hb_obj$a1
+all_centroids_df <- scurve_model_obj$hb_obj$centroids
+gen_hex_coord(centroids_data = all_centroids_df, a1 = width)
 
 }

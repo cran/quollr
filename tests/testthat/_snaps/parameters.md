@@ -1,45 +1,45 @@
 # compute_mean_density_hex() works
 
     Code
-      compute_mean_density_hex(df_bin_centroids = df_bin_centroids, num_bins_x = num_bins_x)
-    Output
-      $hb_id
-       [1]  2  6  7 12 13 18 24 28 29 34
-      
-      $mean_density
-       [1] 0.4117647 0.2941176 0.3235294 0.5000000 0.4313725 0.3333333 0.4705882
-       [8] 0.6176471 0.5882353 0.2647059
-      
-
----
-
-    Code
-      compute_mean_density_hex(df_bin_centroids = df_bin_centroids, num_bins_x = NA)
+      compute_mean_density_hex(model_2d = scurve_model_obj$model_2d, b1 = 4)
     Condition
-      Error in `compute_mean_density_hex()`:
-      ! Number of bins along x axis is not defined.
+      Warning in `compute_mean_density_hex()`:
+      There are hexagonal bins that don't have any neighbouring bins.
+    Output
+      # A tibble: 26 x 2
+         hb_id mean_density
+         <int>        <dbl>
+       1    42     NaN     
+       2    49       0.012 
+       3    52       0.012 
+       4    53       0.0113
+       5    56       0.0115
+       6    57       0.0117
+       7    67     NaN     
+       8    69       0.011 
+       9    70       0.014 
+      10    86     NaN     
+      # i 16 more rows
 
 # find_low_dens_hex() works
 
     Code
-      find_low_dens_hex(df_bin_centroids_all = df_bin_centroids, num_bins_x = num_bins_x,
-        df_bin_centroids_low = df_bin_centroids_low)
+      find_low_dens_hex(model_2d = scurve_model_obj$model_2d, b1 = 4,
+      benchmark_mean_dens = 0.05)
+    Condition
+      Warning in `compute_mean_density_hex()`:
+      There are hexagonal bins that don't have any neighbouring bins.
     Output
-      [1] 7
+       [1]  49  52  53  56  57  69  70 197 200 202 205 222 227 232 258 259
 
 ---
 
     Code
-      find_low_dens_hex(df_bin_centroids_all = df_bin_centroids, num_bins_x = num_bins_x,
-        df_bin_centroids_low = data.frame(matrix(nrow = 0, ncol = 0)))
+      find_low_dens_hex(model_2d = scurve_model_obj$model_2d, b1 = 4,
+      benchmark_mean_dens = 0.1)
+    Condition
+      Warning in `compute_mean_density_hex()`:
+      There are hexagonal bins that don't have any neighbouring bins.
     Output
-      numeric(0)
-
----
-
-    Code
-      find_low_dens_hex(df_bin_centroids_all = df_bin_centroids, num_bins_x = num_bins_x,
-        df_bin_centroids_low = df_bin_centroids_low)
-    Output
-      numeric(0)
+       [1]  49  52  53  56  57  69  70 197 200 202 205 222 227 232 258 259
 

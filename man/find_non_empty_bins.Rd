@@ -4,40 +4,15 @@
 \alias{find_non_empty_bins}
 \title{Find the number of bins required to achieve required number of non-empty bins.}
 \usage{
-find_non_empty_bins(
-  data,
-  x = x,
-  y = y,
-  non_empty_bins,
-  x_start = NA,
-  y_start = NA,
-  buffer_x = NA,
-  buffer_y = NA,
-  hex_size = NA,
-  col_start
-)
+find_non_empty_bins(nldr_obj, m = 2, q = 0.1)
 }
 \arguments{
-\item{data}{A tibble or data frame.}
+\item{nldr_obj}{A list of a tibble contains scaled first and second columns
+of NLDR data, and numeric vectors representing the limits of the original NLDR data.}
 
-\item{x}{The name of the column that contains values along the x-axis.}
+\item{m}{The desired number of non-empty bins.}
 
-\item{y}{The name of the column that contains values along the y-axis.}
-
-\item{non_empty_bins}{The desired number of non-empty bins.}
-
-\item{x_start}{Starting point along the x-axis for hexagonal binning.}
-
-\item{y_start}{Starting point along the y-axis for hexagonal binning.}
-
-\item{buffer_x}{The buffer size along the x-axis.}
-
-\item{buffer_y}{The buffer size along the y-axis.}
-
-\item{hex_size}{A numeric value that initializes the radius of the outer
-circle surrounding the hexagon.}
-
-\item{col_start}{The text that begins the column name of x and y axes of data.}
+\item{q}{The buffer amount as proportion of data range.}
 }
 \value{
 The number of bins along the x and y axes
@@ -48,8 +23,6 @@ This function determines the number of bins along the x and y axes
 to obtain a specific number of non-empty bins.
 }
 \examples{
-find_non_empty_bins(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", non_empty_bins = 10, x_start = NA,
-y_start = NA, buffer_x = NA, buffer_y = NA, hex_size = NA, col_start = "UMAP")
+find_non_empty_bins(nldr_obj = scurve_model_obj$nldr_obj, m = 5)
 
 }

@@ -1,115 +1,37 @@
-#' Compute maximum value of y for scaling
+#' Scaling the NLDR data
 #'
-#' This function compute the maximum y value need to use for scaling.
+#' This function scales first and second columns.
 #'
-#' @param aspect_ratio Numeric value representing the aspect ratio of the plot area.
-#' @param hex_ratio Numeric value representing the ratio of the hexagon size.
+#' @param nldr_data A tibble that contains embedding components in the first and second columns.
 #'
-#' @return A value which should be used as maximum value of y when scaling.
-#'
-#'
-#' @examples
-#' calc_y_max(aspect_ratio = 2.019414, hex_ratio = 0.2309401)
-#'
-#' @export
-calc_y_max <- function(aspect_ratio, hex_ratio) {
-
-  if (is.na(aspect_ratio) ) {
-
-    stop("Aspect ratio is missing.")
-
-  }
-
-  if (is.na(hex_ratio)) {
-
-    stop("Hex ratio is missing.")
-  }
-
-  if (is.infinite(aspect_ratio)) {
-
-    stop("Aspect ratio can't be infinite.")
-
-
-  }
-
-  if (is.infinite(hex_ratio)) {
-
-    stop("Hex ratio can't be infinite.")
-
-
-  }
-
-  if (hex_ratio <= 0) {
-
-    stop("Hex ratio can't be zero or negative.")
-
-
-  }
-
-  if (aspect_ratio <= 0) {
-
-    stop("Aspect ratio can't be zero or negative.")
-
-  }
-
-
-  ymax <- ceiling(aspect_ratio/hex_ratio) * hex_ratio
-
-  return(ymax)
-
-}
-
-
-#' Scaling the data
-#'
-#' This function scales the x and y coordinates.
-#'
-#' @param data A tibble or data frame.
-#' @param x The name of the column that contains values along the x-axis.
-#' @param y The name of the column that contains values along the y-axis.
-#' @param hex_ratio Numeric value representing the ratio of the hexagon size.
-#'
-#' @return A list contains scaled x and y coordinates.
-#'
-#' @importFrom rlang as_string sym
+#' @return A list of a tibble contains scaled first and second columns NLDR data,
+#' and numeric vectors representing the limits of the original NLDR data.
 #'
 #' @examples
-#' gen_scaled_data(data = s_curve_noise_umap, x = "UMAP1", y = "UMAP2")
+#' gen_scaled_data(nldr_data = scurve_umap)
 #'
 #' @export
-gen_scaled_data <- function(data, x, y, hex_ratio = NA) {
+gen_scaled_data <- function(nldr_data) {
 
-  ## Obtain 2D embeddings
-  emb1_vec <- data[[rlang::as_string(rlang::sym(x))]]
-  emb2_vec <- data[[rlang::as_string(rlang::sym(y))]]
+  # Extract columns as matrix for efficiency
+  mat <- as.matrix(nldr_data[, 1:2])
 
-  ## Compute aspect ratio
-  aspect_ratio <- abs(diff(range(emb2_vec))/diff(range(emb1_vec)))
+  # Compute limits
+  min_x1 <- min(mat[, 1])
+  max_x1 <- max(mat[, 1])
+  min_x2 <- min(mat[, 2])
+  max_x2 <- max(mat[, 2])
 
-  ## Scale first embedding between 0 and 1
-  x_min <- 0
-  x_max <- 1
-  scaled_emb1_vec <- ((emb1_vec - min(emb1_vec))/
-                        (max(emb1_vec) - min(emb1_vec))) * (x_max - x_min)
+  lim1 <- c(min_x1, max_x1)
+  lim2 <- c(min_x2, max_x2)
 
-  ## Scale second embedding between 0 and ymax
-  y_min <- 0
+  # Scale values
+  mat[, 1] <- (mat[, 1] - min_x1) / (max_x1 - min_x1)
+  mat[, 2] <- (mat[, 2] - min_x2) / (max_x1 - min_x1)
 
-  if(is.na(hex_ratio)) {
-    ## Default hex ratio
-    hex_ratio <- 2/sqrt(3)
-  }
+  # Recombine with original data (if there are other columns)
+  nldr_data[, 1:2] <- mat
 
-  y_max <- calc_y_max(aspect_ratio = aspect_ratio, hex_ratio = hex_ratio)
-
-  scaled_emb2_vec <- ((emb2_vec - min(emb2_vec))/
-                        (max(emb2_vec) - min(emb2_vec))) * (y_max - y_min)
-
-  scaled_emb_list <- list(scaled_emb1_vec = scaled_emb1_vec, scaled_emb2_vec = scaled_emb2_vec)
-
-  ## Rename elements
-  names(scaled_emb_list) <- paste0("scaled_", c(x, y))
-
-  return(scaled_emb_list)
+  return(list(scaled_nldr = nldr_data, lim1 = lim1, lim2 = lim2))
 }
 

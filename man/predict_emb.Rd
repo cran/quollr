@@ -2,32 +2,27 @@
 % Please edit documentation in R/prediction.R
 \name{predict_emb}
 \alias{predict_emb}
-\title{Predict 2D embeddings}
+\title{Predict 2-D embeddings}
 \usage{
-predict_emb(test_data, df_bin_centroids, df_bin, type_NLDR)
+predict_emb(highd_data, model_2d, model_highd)
 }
 \arguments{
-\item{test_data}{The test dataset containing high-dimensional coordinates and an unique identifier.}
+\item{highd_data}{The tibble contains high-dimensional data and an unique identifier.}
 
-\item{df_bin_centroids}{Centroid coordinates of hexagonal bins in 2D space.}
+\item{model_2d}{Centroid coordinates of hexagonal bins in 2-D space.}
 
-\item{df_bin}{Centroid coordinates of hexagonal bins in high dimensions.}
-
-\item{type_NLDR}{The type of non-linear dimensionality reduction (NLDR) used.}
+\item{model_highd}{Centroid coordinates of hexagonal bins in high dimensions.}
 }
 \value{
-A list contains predicted 2D embeddings, ID in the test data, and predicted hexagonal IDs.
+A tibble contains predicted 2-D embeddings,
+ID in the test data, and predicted hexagonal IDs.
 }
 \description{
-Given a test dataset, the centroid coordinates of hexagonal bins in  2D and high-dimensional space,
-predict the 2D embeddings for each data point in the test dataset.
+Given a test dataset, the centroid coordinates of hexagonal bins in  2-D and high-dimensional space,
+predict the 2-D embeddings for each data point in the test dataset.
 }
 \examples{
-model <- fit_highd_model(training_data = s_curve_noise_training, x = "UMAP1", y = "UMAP2",
-nldr_df_with_id = s_curve_noise_umap_scaled, col_start_2d = "UMAP", col_start_highd = "x")
-df_bin_centroids <- model$df_bin_centroids
-df_bin <- model$df_bin
-predict_emb(test_data = s_curve_noise_training, df_bin_centroids = df_bin_centroids,
-df_bin = df_bin, type_NLDR = "UMAP")
+predict_emb(highd_data = scurve, model_highd = scurve_model_obj$model_highd,
+model_2d = scurve_model_obj$model_2d)
 
 }

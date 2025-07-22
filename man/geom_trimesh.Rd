@@ -39,17 +39,7 @@ A `ggplot2` layer object.
 Create a trimesh plot
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-hb_obj <- hex_binning(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA, col_start = "UMAP")
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, counts_df = counts_df)
+df_bin_centroids <- scurve_model_obj$model_2d |> dplyr::filter(n_h > 10)
 ggplot2::ggplot() +
 geom_trimesh(data = df_bin_centroids, mapping = ggplot2::aes(x = c_x, y = c_y))
 

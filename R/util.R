@@ -3,96 +3,53 @@
 #' This function calculates the effective number of bins along the x and y axes
 #' of a hexagonal grid.
 #'
-#' @param data A tibble or data frame.
-#' @param x The name of the column that contains values along the x-axis.
-#' @param y The name of the column that contains values along the y-axis.
-#' @param hex_size A numeric value that initializes the radius of the outer
-#' circle surrounded by the hexagon.
-#' @param buffer_x The buffer size along the x-axis.
-#' @param buffer_y The buffer size along the y-axis.
+#' @param nldr_obj A list of a tibble contains scaled first and second columns
+#' of NLDR data, and numeric vectors representing the limits of the original NLDR data.
+#' @param b1 Number of bins along the x axis.
+#' @param q The buffer amount as proportion of data range.
 #'
 #' @return A list of numeric values that represents the effective number of
-#' bins along the x and y axes of a hexagonal grid.
-#' @importFrom rlang sym as_string
+#' bins along the y axis, height and, width of the hexagon.
 #'
 #' @examples
-#' calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1", y = "UMAP2",
-#' hex_size = NA, buffer_x = NA, buffer_y = NA)
+#' calc_bins_y(nldr_obj = scurve_model_obj$nldr_obj, b1 = 4, q = 0.1)
 #'
 #' @export
-calc_bins <- function(data, x, y, hex_size = NA, buffer_x = NA, buffer_y = NA){
+calc_bins_y <- function(nldr_obj, b1 = 4, q = 0.1) {
 
-  ## Obtain values in x and y axes
-  x_values <- data[[rlang::as_string(rlang::sym(x))]]
-  y_values <- data[[rlang::as_string(rlang::sym(y))]]
-
-
-  if (anyNA(x_values) | anyNA(y_values)) {
-    stop("NAs present")
+  ## To check whether b2 greater than 2
+  if (b1 < 2) {
+    cli::cli_abort("Number of bins along the x-axis at least should be 2.")
   }
 
-  if (any(is.infinite(x_values)) | any(is.infinite(y_values))) {
-    stop("Inf present")
+  ## To check whether q is between a specific range
+  if (!dplyr::between(q, 0.05, 0.2)) {
+    cli::cli_abort("The buffer should be within 0.05 and 0.2.")
   }
 
-  if (is.na(hex_size)) {
-    hex_size <- 0.2
-    message(paste0("Hex size is set to ", hex_size, "."))
+  ## To compute the range
+  lim1 <- nldr_obj$lim1
+  lim2 <- nldr_obj$lim2
+  r2 <- diff(lim2)/diff(lim1)
+
+  ## To compute the number of bins along the x-axis
+  b2 <- ceiling(1 + ((2 * (r2 + q * (1 + r2)) * (b1 - 1))/(sqrt(3) * (1 + 2 * q))))
+
+  ## Validating and compute horizontal spacing
+  check_factor <- (1 /(1 + q)) * (((sqrt(3) * (1 + 2 *q) * (b2 - 1))/(2 * (b1 - 1))) - q)
+
+  if (r2 > check_factor) {
+
+    a1 <- (1 + 2 * q)/(b1 - 1)
 
   } else {
-    if ((hex_size <= 0) || (is.infinite(hex_size))) {
-      stop("Invalid hex size value.")
 
-    }
-  }
-
-  ## Initialize horizontal and vertical spacing
-  hs <- sqrt(3) * hex_size
-  vs <- 1.5 * hex_size
-
-  if (is.na(buffer_x)) {
-    buffer_x <- sqrt(3) * hex_size * 1.5
-    message(paste0("Buffer along the x-axis is set to ", buffer_x, "."))
-  } else {
-
-    ## Buffer size is exceeds
-    if (buffer_x > (sqrt(3) * hex_size)) {
-      stop(paste0("Buffer along the x-axis exceeds than ", sqrt(3) * hex_size, ".
-                  Need to assign a value less than ", sqrt(3) * hex_size, "."))
-
-    } else if (buffer_x <= 0) {
-
-      stop(paste0("Buffer along the x-axis is less than or equal to zero."))
-
-    }
-
+    a1 <- (2 * (r2 + q * (1 + r2)))/(sqrt(3) * (b2 - 1))
 
   }
 
-  if (is.na(buffer_y)) {
-    buffer_y <- 1.5 * hex_size * 1.5
-    message(paste0("Buffer along the y-axis is set to ", buffer_y, "."))
-  } else {
+  # To compute height of the hexagon
+  a2 <- sqrt(3) * a1/2
 
-    ## Buffer size is exceeds
-    if (buffer_y > (1.5 * hex_size)) {
-      stop(paste0("Buffer along the y-axis exceeds than ", 1.5 * hex_size, ".
-                  Need to assign a value less than ", 1.5 * hex_size, "."))
-
-    } else if (buffer_y <= 0) {
-
-      stop(paste0("Buffer along the y-axis is less than or equal to zero."))
-
-    }
-  }
-
-  ## To compute the range along x-axis
-  xwidth <- diff(range(x_values))  + buffer_x
-  num_x <- ceiling(xwidth/hs)
-
-  ## To compute the range along x-axis
-  ywidth <- diff(range(y_values))  + buffer_y
-  num_y <- ceiling(ywidth/vs)
-
-  return(list(num_x = num_x, num_y = num_y))
+  return(list(b2 = b2, a1 = a1, a2 = a2))
 }

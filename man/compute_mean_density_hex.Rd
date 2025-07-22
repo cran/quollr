@@ -4,34 +4,22 @@
 \alias{compute_mean_density_hex}
 \title{Compute mean density of hexagonal bins}
 \usage{
-compute_mean_density_hex(df_bin_centroids, num_bins_x = NA)
+compute_mean_density_hex(model_2d, b1 = 5)
 }
 \arguments{
-\item{df_bin_centroids}{A data frame containing information about hexagonal bin centroids,
-including the hexagon ID and the standard normalized counts (\code{std_counts}).}
+\item{model_2d}{A tibble that contains information about hexagonal bin centroids,
+including the hexagon ID and the standardised counts (\code{w_h}).}
 
-\item{num_bins_x}{The number of bins along the x-axis for the hexagonal grid.}
+\item{b1}{The number of bins along the x-axis for the hexagonal grid.}
 }
 \value{
-A list contains hexagonal IDs and the mean
+A tibble contains hexagonal IDs and the mean
 density of each hexagonal bin based on its neighboring bins.
 }
 \description{
 This function calculates the mean density of hexagonal bins based on their neighboring bins.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-hb_obj <- hex_binning(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA, col_start = "UMAP")
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df,
-counts_df = counts_df)
-compute_mean_density_hex(df_bin_centroids, num_bins_x = num_bins_x)
+compute_mean_density_hex(model_2d = scurve_model_obj$model_2d, b1 = 5)
 
 }

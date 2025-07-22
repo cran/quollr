@@ -2,63 +2,28 @@
 % Please edit documentation in R/model.R
 \name{fit_highd_model}
 \alias{fit_highd_model}
-\title{Construct the 2D model and lift into high-D}
+\title{Construct the 2-D model and lift into high-dimensions}
 \usage{
-fit_highd_model(
-  training_data,
-  nldr_df_with_id,
-  x,
-  y,
-  num_bins_x = NA,
-  num_bins_y = NA,
-  x_start = NA,
-  y_start = NA,
-  buffer_x = NA,
-  buffer_y = NA,
-  hex_size = NA,
-  is_rm_lwd_hex = FALSE,
-  benchmark_to_rm_lwd_hex = NA,
-  col_start_2d,
-  col_start_highd
-)
+fit_highd_model(highd_data, nldr_data, b1 = 4, q = 0.1, benchmark_highdens = 5)
 }
 \arguments{
-\item{training_data}{A data frame containing the training high-dimensional data.}
+\item{highd_data}{A tibble that contains the high-dimensional data with a unique identifier.}
 
-\item{nldr_df_with_id}{A data frame containing 2D embeddings with a unique identifier.}
+\item{nldr_data}{A tibble that contains the embedding with a unique identifier.}
 
-\item{x}{The name of the column that contains first 2D embeddings component.}
+\item{b1}{(default: 4) A numeric value representing the number of bins along the x axis.}
 
-\item{y}{The name of the column that contains second 2D embeddings component.}
+\item{q}{(default: 0.1) A numeric value representing the buffer amount as proportion of data range.}
 
-\item{num_bins_x}{Number of bins along the x-axis.}
-
-\item{num_bins_y}{Number of bins along the y-axis.}
-
-\item{x_start}{Starting point along the x-axis for hexagonal binning.}
-
-\item{y_start}{Starting point along the y-axis for hexagonal binning.}
-
-\item{buffer_x}{The buffer size along the x-axis.}
-
-\item{buffer_y}{The buffer size along the y-axis.}
-
-\item{hex_size}{A numeric value that initializes the radius of the outer circle
-surrounding the hexagon.}
-
-\item{is_rm_lwd_hex}{Logical, indicating whether to remove low-density hexagons
-(default is FALSE).}
-
-\item{benchmark_to_rm_lwd_hex}{The benchmark value to remove low-density hexagons.}
-
-\item{col_start_2d}{The text prefix for columns in the 2D embedding data.}
-
-\item{col_start_highd}{The text prefix for columns in the high-dimensional data.}
+\item{benchmark_highdens}{(default: 5) A numeric value using to filter high-density hexagons.}
 }
 \value{
-A list containing the data frame with high-dimensional coordinates
-for 2D bin centroids (\code{df_bin}) and the data frame containing
-information about hexagonal bin centroids (\code{df_bin_centroids}) in 2D.
+A list containing a list of a tibble contains scaled first and second columns
+of NLDR data, and numeric vectors representing the limits of the original NLDR data (\code{nldr_obj}),
+a object that contains hexagonal binning information (\code{hb_obj}),
+a tibble with high-dimensional model (\code{model_highd}) and a tibble containing
+hexagonal bin centroids in 2-D (\code{model_2d}), and
+a tibble that contains the edge information (\code{trimesh_data}).
 }
 \description{
 This function fits a high-dimensional model using hexagonal bins and provides options
@@ -66,7 +31,7 @@ to customize the modeling process, including the choice of bin centroids or bin 
 removal of low-density hexagons, and averaging of high-dimensional data.
 }
 \examples{
-fit_highd_model(training_data = s_curve_noise_training, x = "UMAP1", y = "UMAP2",
-nldr_df_with_id = s_curve_noise_umap_scaled, col_start_2d = "UMAP", col_start_highd = "x")
+fit_highd_model(highd_data = scurve, nldr_data = scurve_umap, b1 = 4,
+q = 0.1, benchmark_highdens = 5)
 
 }

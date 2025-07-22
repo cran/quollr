@@ -4,34 +4,24 @@
 \alias{assign_data}
 \title{Assign data to hexagons}
 \usage{
-assign_data(data, centroid_df, col_start)
+assign_data(nldr_obj, centroids_data)
 }
 \arguments{
-\item{data}{data A tibble or data frame.}
+\item{nldr_obj}{A list of a tibble contains scaled first and second columns
+of NLDR data, and numeric vectors representing the limits of the original NLDR data.}
 
-\item{centroid_df}{The dataset with centroid coordinates only.}
-
-\item{col_start}{The text that begins the column name of x and y axes of data.}
+\item{centroids_data}{The dataset with centroid coordinates.}
 }
 \value{
-A list contains x and y coordinates and corresponding hexagon ID
-(emb_1, emb_2, and hb_id respectively).
+A tibble contains embedding components (\code{emb1}, \code{emb2})
+and corresponding hexagon ID (\code{h}).
 }
 \description{
 This function assigns the data to hexagons.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-centroid_list <- gen_centroids(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA)
-all_centroids_df <- as.data.frame(do.call(cbind, centroid_list))
-s_curve_noise_umap_scaled_rm_id <- s_curve_noise_umap_scaled |> dplyr::select(-ID)
-assign_data(data = s_curve_noise_umap_scaled_rm_id,
-centroid_df = all_centroids_df, col_start = "UMAP")
+all_centroids_df <- scurve_model_obj$hb_obj$centroids
+assign_data(nldr_obj = scurve_model_obj$nldr_obj,
+centroids_data = all_centroids_df)
 
 }

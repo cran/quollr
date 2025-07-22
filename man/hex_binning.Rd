@@ -4,63 +4,31 @@
 \alias{hex_binning}
 \title{Hexagonal binning}
 \usage{
-hex_binning(
-  data,
-  x,
-  y,
-  num_bins_x,
-  num_bins_y,
-  x_start = NA,
-  y_start = NA,
-  buffer_x = NA,
-  buffer_y = NA,
-  hex_size = NA,
-  col_start
-)
+hex_binning(nldr_obj, b1 = 5, q = 0.1)
 }
 \arguments{
-\item{data}{A tibble or data frame.}
+\item{nldr_obj}{A list of a tibble contains scaled first and second columns
+of NLDR data, and numeric vectors representing the limits of the original NLDR data.}
 
-\item{x}{The name of the column that contains values along the x-axis.}
+\item{b1}{Number of bins along the x axis.}
 
-\item{y}{The name of the column that contains values along the y-axis.}
-
-\item{num_bins_x}{Number of bins along the x-axis.}
-
-\item{num_bins_y}{Number of bins along the y-axis.}
-
-\item{x_start}{Starting point along the x-axis for hexagonal binning.}
-
-\item{y_start}{Starting point along the y-axis for hexagonal binning.}
-
-\item{buffer_x}{The buffer size along the x-axis.}
-
-\item{buffer_y}{The buffer size along the y-axis.}
-
-\item{hex_size}{A numeric value that initializes the radius of the outer
-circle surrounding the hexagon.}
-
-\item{col_start}{The text that begins the column name of x and y axes of data.}
+\item{q}{The buffer amount as proportion of data range.}
 }
 \value{
-A list contains all hexagonal bin centroids (centroids),
-hexagonal coordinates of the full grid(hex_poly),
-2D embeddings with corresponding hexagon IDs (data_hb_id),
-hex bins with their corresponding standardise counts (std_cts),
-total number of hex bins(tot_bins), number of non-empty hex bins (non_bins)
-and points within each hexagon (pts_bins).
+A object that contains numeric vector that contains binwidths (\code{a1}),
+vertical distance (\code{a2}), bins along the x and y axes respectively (\code{bins}),
+numeric vector that contains hexagonal
+starting point coordinates all hexagonal bin centroids (\code{centroids}),
+hexagonal coordinates of the full grid (\code{hex_poly}),
+embedding components with their corresponding hexagon IDs (\code{data_hb_id}),
+hex bins with their corresponding standardise counts (\code{std_cts}),
+total number of hex bins (\code{b}), number of non-empty hex bins (\code{m})
+and points within each hexagon (\code{pts_bins}).
 }
 \description{
-This function generates a list which contains hexagonal binning information.
+This function generates the hexagonal object.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-hex_binning(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA, col_start = "UMAP")
+hex_binning(nldr_obj = scurve_model_obj$nldr_obj, b1 = 5, q = 0.1)
 
 }

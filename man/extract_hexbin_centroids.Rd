@@ -2,34 +2,28 @@
 % Please edit documentation in R/2d.R
 \name{extract_hexbin_centroids}
 \alias{extract_hexbin_centroids}
-\title{Extract hexagonal bin centroids coordinates and the corresponding standardize counts.}
+\title{Extract hexagonal bin centroids coordinates and the corresponding standardise counts.}
 \usage{
-extract_hexbin_centroids(centroids_df, counts_df)
+extract_hexbin_centroids(centroids_data, counts_data)
 }
 \arguments{
-\item{centroids_df}{A data frame contains all hexagonal bin centroid
+\item{centroids_data}{A tibble that contains all hexagonal bin centroid
 coordinates with hexagon IDs.}
 
-\item{counts_df}{A data frame contains hexagon IDs with the standardize
+\item{counts_data}{A tibble that contains hexagon IDs with the standardise
 number of points within each hexagon.}
 }
 \value{
-A data frame contains hexagon ID, centroid coordinates, and standardize counts.
+A tibble contains hexagon ID (\code{h}), centroid coordinates (\code{c_x}, \code{c_y}),
+bin counts (\code{n_h}), and standardise counts (\code{w_h}).
 }
 \description{
-Extract hexagonal bin centroids coordinates and the corresponding standardize counts.
+Extract hexagonal bin centroids coordinates and the corresponding standardise counts.
 }
 \examples{
-num_bins_list <- calc_bins(data = s_curve_noise_umap_scaled, x = "UMAP1",
-y = "UMAP2", hex_size = NA, buffer_x = NA, buffer_y = NA)
-num_bins_x <- num_bins_list$num_x
-num_bins_y <- num_bins_list$num_y
-hb_obj <- hex_binning(data = s_curve_noise_umap_scaled,
-x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_x,
-num_bins_y = num_bins_y, x_start = NA, y_start = NA, buffer_x = NA,
-buffer_y = NA, hex_size = NA, col_start = "UMAP")
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
-counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
-extract_hexbin_centroids(centroids_df = all_centroids_df, counts_df = counts_df)
+all_centroids_df <- scurve_model_obj$hb_obj$centroids
+counts_data <- scurve_model_obj$hb_obj$std_cts
+extract_hexbin_centroids(centroids_data = all_centroids_df,
+counts_data = counts_data)
 
 }

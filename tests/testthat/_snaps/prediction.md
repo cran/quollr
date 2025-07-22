@@ -1,90 +1,117 @@
 # predict_emb() works
 
     Code
-      predict_emb(test_data = s_curve_noise_training, df_bin_centroids = df_bin_centroids,
-        df_bin = df_bin, type_NLDR = "UMAP")
+      predict_emb(highd_data = scurve, model_highd = scurve_model_obj$model_highd,
+      model_2d = scurve_model_obj$model_2d)
     Output
-      $pred_UMAP_1
-       [1] 0.1732051 0.6928203 0.8660254 0.1732051 0.1732051 0.8660254 0.6928203
-       [8] 0.6928203 0.6928203 0.8660254 0.6928203 0.1732051 1.0392305 0.0000000
-      [15] 0.6928203 0.6928203 0.1732051 0.6928203 0.5196152 0.1732051 0.6928203
-      [22] 0.1732051 0.0000000 0.8660254 0.8660254 0.3464102 0.5196152 0.6928203
-      [29] 0.3464102 0.6928203 0.8660254 0.8660254 0.6928203 0.1732051 0.8660254
-      [36] 0.1732051 0.6928203 0.8660254 0.8660254 0.0000000 0.5196152 0.8660254
-      [43] 0.3464102 0.8660254 0.8660254 0.6928203 0.1732051 0.0000000 0.8660254
-      [50] 0.0000000 0.6928203 0.6928203 0.8660254 0.3464102 0.6928203 0.8660254
-      [57] 0.8660254 1.0392305 1.0392305 0.5196152 0.8660254 1.0392305 0.5196152
-      [64] 0.8660254 0.3464102 0.3464102 1.0392305 0.8660254 0.6928203 1.0392305
-      [71] 0.8660254 0.5196152 0.1732051 0.3464102 1.0392305
-      
-      $pred_UMAP_2
-       [1]  0.45  0.75  1.05 -0.15  0.45  1.65  0.75  0.75  0.75  1.65  0.75  0.45
-      [13]  1.35  0.15  0.75  1.35  0.45  1.35  0.45 -0.15  0.75 -0.15  0.15  1.65
-      [25]  1.05  0.15  0.45  0.75  0.15  0.75  1.05  1.65  0.75  0.45  1.65 -0.15
-      [37]  1.35  1.65  1.65  0.15  0.45  1.05  0.15  1.05  1.05  1.35 -0.15  0.15
-      [49]  1.65  0.15  0.75  0.75  1.65  0.15  1.35  1.65  1.05  1.35  1.35  0.45
-      [61]  1.65  1.35  0.45  1.65  0.15  0.15  1.35  1.05  1.35  1.35  1.65  0.45
-      [73] -0.15  0.15  1.35
-      
-      $ID
-       [1]   1   2   3   4   6   7   8   9  11  12  14  15  16  17  19  20  21  22  23
-      [20]  24  25  26  31  33  34  35  37  38  39  40  41  42  43  44  45  46  47  51
-      [39]  52  54  55  56  57  59  60  62  63  64  65  66  67  69  70  71  72  73  74
-      [58]  75  76  77  78  79  80  81  84  87  89  91  93  94  95  96  97  99 100
-      
-      $pred_hb_id
-       [1] 12 18 24  2 12 34 18 18 18 34 18 12 29  6 18 28 12 28 13  2 18  2  6 34 24
-      [26]  7 13 18  7 18 24 34 18 12 34  2 28 34 34  6 13 24  7 24 24 28  2  6 34  6
-      [51] 18 18 34  7 28 34 24 29 29 13 34 29 13 34  7  7 29 24 28 29 34 13  2  7 29
-      
+      # A tibble: 1,000 x 4
+         pred_emb_1 pred_emb_2    ID pred_h
+              <dbl>      <dbl> <int>  <int>
+       1     0.275       0.823     1    200
+       2     0.734       0.462     2    131
+       3     0.734       0.462     3    131
+       4     0.0251      0.968     4    227
+       5     0.192       1.11      5    259
+       6     0.442       0.968     6    232
+       7     0.150       0.318     7     94
+       8     0.859       0.679     8    177
+       9     0.818       0.896     9    222
+      10     0.901       0.318    10    103
+      # i 990 more rows
 
----
+# glance() works
 
     Code
-      predict_emb(test_data = s_curve_noise_test, df_bin_centroids = df_bin_centroids,
-        df_bin = df_bin, type_NLDR = "UMAP")
+      glance(highd_data = scurve, model_highd = scurve_model_obj$model_highd,
+      model_2d = scurve_model_obj$model_2d)
     Output
-      $pred_UMAP_1
-       [1] 0.1732051 0.8660254 0.8660254 0.3464102 0.3464102 0.3464102 0.8660254
-       [8] 0.8660254 0.1732051 0.5196152 0.3464102 0.5196152 0.6928203 1.0392305
-      [15] 0.5196152 0.5196152 0.0000000 0.6928203 0.1732051 0.3464102 0.6928203
-      [22] 0.8660254 0.1732051 0.8660254 0.6928203
-      
-      $pred_UMAP_2
-       [1] -0.15  1.05  1.65  0.15  0.15  0.15  1.05  1.65 -0.15  0.45  0.15  0.45
-      [13]  0.75  1.35  0.45  0.45  0.15  1.35  0.45  0.15  0.75  1.05  0.45  1.65
-      [25]  1.35
-      
-      $ID
-       [1]  5 10 13 18 27 28 29 30 32 36 48 49 50 53 58 61 68 82 83 85 86 88 90 92 98
-      
-      $pred_hb_id
-       [1]  2 24 34  7  7  7 24 34  2 13  7 13 18 29 13 13  6 28 12  7 18 24 12 34 28
-      
+      # A tibble: 1 x 2
+        Error  RMSE
+        <dbl> <dbl>
+      1  613. 0.431
 
-# gen_summary() works
+# augment() works
 
     Code
-      gen_summary(test_data = s_curve_noise_training, prediction_df = pred_df_test,
-        df_bin = df_bin, col_start = "x")
+      augment(highd_data = scurve, model_highd = scurve_model_obj$model_highd,
+      model_2d = scurve_model_obj$model_2d)
     Output
-      $mse
-      [1] 0.3229922
-      
-      $aic
-      [1] -453.3167
-      
+      # A tibble: 1,000 x 32
+            ID      x1    x2       x3       x4       x5       x6        x7 pred_h
+         <int>   <dbl> <dbl>    <dbl>    <dbl>    <dbl>    <dbl>     <dbl>  <int>
+       1     1 -0.120  0.819 -1.99     0.0114   0.00351  0.0334   0.00638     200
+       2     2 -0.0492 0.166  0.00121  0.0115  -0.0166  -0.0297   0.00509     131
+       3     3 -0.774  0.651  0.367   -0.0172   0.00600  0.0211   0.00303     131
+       4     4 -0.606  0.952 -1.80     0.0157  -0.00978 -0.0590  -0.00754     227
+       5     5 -0.478  1.10  -1.88    -0.00423  0.00495 -0.0482  -0.00982     259
+       6     6  0.818  1.78  -1.58     0.0124   0.0198   0.0560  -0.000730    232
+       7     7  0.910  0.975  1.42    -0.0111   0.0132   0.0299   0.00401      94
+       8     8 -0.0691 1.90   0.00239  0.0125  -0.00463  0.0260   0.00590     177
+       9     9  0.859  1.34  -0.488   -0.00195 -0.0145  -0.00950  0.00593     222
+      10    10 -0.727  1.56   0.314    0.0189   0.0147  -0.0659   0.00617     103
+      # i 990 more rows
+      # i 23 more variables: model_high_d_x1 <dbl>, model_high_d_x2 <dbl>,
+      #   model_high_d_x3 <dbl>, model_high_d_x4 <dbl>, model_high_d_x5 <dbl>,
+      #   model_high_d_x6 <dbl>, model_high_d_x7 <dbl>, error_square_x1 <dbl>,
+      #   error_square_x2 <dbl>, error_square_x3 <dbl>, error_square_x4 <dbl>,
+      #   error_square_x5 <dbl>, error_square_x6 <dbl>, error_square_x7 <dbl>,
+      #   row_wise_total_error <dbl>, abs_error_x1 <dbl>, abs_error_x2 <dbl>, ...
 
----
+# gen_diffbin1_errors() works
 
     Code
-      gen_summary(test_data = s_curve_noise_test, prediction_df = pred_df_test_n,
-        df_bin = df_bin, col_start = "x")
+      gen_diffbin1_errors(highd_data = scurve, nldr_data = scurve_umap)
+    Message
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
+      v Model generated successfully!!!
     Output
-      $mse
-      [1] 0.3458999
-      
-      $aic
-      [1] -45.78101
-      
+            Error      RMSE b1 b2    b   m   a1   a2       d_bar
+      1  628.8048 0.4098319  5  7   35  22 0.26 0.23 0.040914704
+      2  562.7530 0.3672331  6  8   48  27 0.23 0.20 0.036862602
+      3  520.4474 0.3364583  7  9   63  33 0.20 0.17 0.032327667
+      4  430.4658 0.2722071  8 11   88  46 0.16 0.14 0.025996005
+      5  406.8971 0.2544715  9 12  108  51 0.14 0.12 0.025513054
+      6  380.7331 0.2388800 10 13  130  59 0.13 0.11 0.022664184
+      7  329.2051 0.2014154 11 15  165  83 0.11 0.10 0.015603331
+      8  321.5839 0.1977916 12 16  192  87 0.11 0.09 0.016286420
+      9  306.5549 0.1846552 13 17  221  99 0.10 0.09 0.014296013
+      10 276.8768 0.1678185 14 19  266 118 0.09 0.08 0.012761403
+      11 273.3133 0.1632627 15 20  300 127 0.08 0.07 0.012188695
+      12 256.7057 0.1539926 16 21  336 143 0.08 0.07 0.010727669
+      13 243.8163 0.1448055 17 23  391 162 0.07 0.06 0.010073650
+      14 230.5567 0.1363121 18 24  432 171 0.07 0.06 0.009841970
+      15 223.3106 0.1314176 19 25  475 186 0.07 0.06 0.009021009
+      16 214.6699 0.1266627 20 27  540 204 0.06 0.05 0.008720843
+      17 210.8964 0.1245104 21 28  588 218 0.06 0.05 0.008159495
+      18 208.3375 0.1225372 22 29  638 229 0.06 0.05 0.007960544
+      19 191.4192 0.1131797 23 31  713 252 0.05 0.05 0.007507407
+      20 187.6444 0.1098865 24 32  768 265 0.05 0.04 0.007249035
+      21 188.3273 0.1110222 25 33  825 265 0.05 0.04 0.007499669
+      22 181.0666 0.1083178 26 35  910 288 0.05 0.04 0.007106813
+      23 177.7219 0.1072918 27 36  972 286 0.05 0.04 0.007554324
+      24 178.9625 0.1076837 28 37 1036 290 0.04 0.04 0.007612155
+      25 174.3416 0.1046141 29 38 1102 300 0.04 0.04 0.007522166
 
