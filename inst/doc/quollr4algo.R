@@ -19,14 +19,16 @@ library(stats)
 nldr_obj <- gen_scaled_data(nldr_data = scurve_umap)
 
 ## Obtain the hexbin object
-hb_obj <- hex_binning(nldr_obj = nldr_obj, b1 = 15, q = 0.1)
+hb_obj <- hex_binning(
+  nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj, 
+  b1 = 21, q = 0.1)
 
 all_centroids_df <- hb_obj$centroids
 counts_df <- hb_obj$std_cts
 
 ## -----------------------------------------------------------------------------
 ## To extract all bin centroids with bin counts
-df_bin_centroids <- extract_hexbin_centroids(centroids_data = all_centroids_df,
+df_bin_centroids <- merge_hexbin_centroids(centroids_data = all_centroids_df,
                                              counts_data = counts_df)
 
 benchmark_highdens <- 0

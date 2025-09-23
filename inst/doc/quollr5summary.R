@@ -16,9 +16,9 @@ library(ggplot2)
 model <- fit_highd_model(
   highd_data = scurve, 
   nldr_data = scurve_umap, 
-  b1 = 4, 
+  b1 = 21, 
   q = 0.1, 
-  benchmark_highdens = 5
+  hd_thresh = 0
 )
 
 df_bin_centroids <- model$model_2d
@@ -34,7 +34,7 @@ pred_df_training <- predict_emb(
 glimpse(pred_df_training)
 
 ## ----fig.alt="UMAP embedding of the S-curve training data with predictions in red."----
-umap_scaled <- scurve_model_obj$nldr_obj$scaled_nldr
+umap_scaled <- scurve_model_obj$nldr_scaled_obj$scaled_nldr
 
 umap_scaled |>
   ggplot(aes(x = emb1, y = emb2, label = ID)) +
@@ -50,16 +50,14 @@ umap_scaled |>
 
 ## -----------------------------------------------------------------------------
 glance(
-  highd_data = scurve, 
-  model_highd = scurve_model_obj$model_highd,
-  model_2d = scurve_model_obj$model_2d
+  x = scurve_model_obj,
+  highd_data = scurve
 )
 
 ## -----------------------------------------------------------------------------
 augment(
-  highd_data = scurve, 
-  model_highd = scurve_model_obj$model_highd,
-  model_2d = scurve_model_obj$model_2d
+  x = scurve_model_obj,
+  highd_data = scurve
 ) |>
   head(5)
 

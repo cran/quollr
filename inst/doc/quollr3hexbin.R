@@ -13,7 +13,10 @@ library(ggplot2)
 library(dplyr)
 
 ## -----------------------------------------------------------------------------
-hb_obj <- hex_binning(nldr_obj = scurve_model_obj$nldr_obj, b1 = 5, q = 0.1)
+hb_obj <- hex_binning(
+  nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj, 
+  b1 = 21, 
+  q = 0.1)
 
 ## -----------------------------------------------------------------------------
 ## Data set with all possible centroids in the hexagonal grid
@@ -26,8 +29,8 @@ glimpse(hex_grid)
 
 ## To obtain the standardise counts within hexbins
 counts_df <- hb_obj$std_cts
-df_bin_centroids <- extract_hexbin_centroids(centroids_data = all_centroids_df, 
-                                             counts_data = counts_df)
+df_bin_centroids <- merge_hexbin_centroids(centroids_data = all_centroids_df, 
+                                           counts_data = counts_df)
 
 ## ----fig.alt="Grid with hexagon centroids."-----------------------------------
 ggplot(data = hex_grid, aes(x = x, y = y)) + 
@@ -44,7 +47,7 @@ ggplot(data = hex_grid, aes(x = x, y = y)) +
   coord_fixed()
 
 ## ----fig.alt="Grid with hexagons overlayed data."-----------------------------
-umap_scaled <- scurve_model_obj$nldr_obj$scaled_nldr
+umap_scaled <- scurve_model_obj$nldr_scaled_obj$scaled_nldr
 
 ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "black", aes(group = h)) +
@@ -56,7 +59,6 @@ hex_grid_with_counts <- left_join(hex_grid, counts_df, by = "h")
 
 ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = h, fill = w_h)) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h)) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
   coord_fixed()
 

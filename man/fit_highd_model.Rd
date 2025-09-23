@@ -4,7 +4,7 @@
 \alias{fit_highd_model}
 \title{Construct the 2-D model and lift into high-dimensions}
 \usage{
-fit_highd_model(highd_data, nldr_data, b1 = 4, q = 0.1, benchmark_highdens = 5)
+fit_highd_model(highd_data, nldr_data, b1 = 30, q = 0.1, hd_thresh = 0)
 }
 \arguments{
 \item{highd_data}{A tibble that contains the high-dimensional data with a unique identifier.}
@@ -15,11 +15,11 @@ fit_highd_model(highd_data, nldr_data, b1 = 4, q = 0.1, benchmark_highdens = 5)
 
 \item{q}{(default: 0.1) A numeric value representing the buffer amount as proportion of data range.}
 
-\item{benchmark_highdens}{(default: 5) A numeric value using to filter high-density hexagons.}
+\item{hd_thresh}{(default: 0) A numeric value using to filter high-density hexagons.}
 }
 \value{
 A list containing a list of a tibble contains scaled first and second columns
-of NLDR data, and numeric vectors representing the limits of the original NLDR data (\code{nldr_obj}),
+of NLDR data, and numeric vectors representing the limits of the original NLDR data (\code{nldr_scaled_obj}),
 a object that contains hexagonal binning information (\code{hb_obj}),
 a tibble with high-dimensional model (\code{model_highd}) and a tibble containing
 hexagonal bin centroids in 2-D (\code{model_2d}), and
@@ -31,7 +31,7 @@ to customize the modeling process, including the choice of bin centroids or bin 
 removal of low-density hexagons, and averaging of high-dimensional data.
 }
 \examples{
-fit_highd_model(highd_data = scurve, nldr_data = scurve_umap, b1 = 4,
-q = 0.1, benchmark_highdens = 5)
+fit_highd_model(highd_data = scurve, nldr_data = scurve_umap, b1 = 30,
+q = 0.1, hd_thresh = 0)
 
 }

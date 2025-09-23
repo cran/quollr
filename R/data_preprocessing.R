@@ -17,21 +17,25 @@ gen_scaled_data <- function(nldr_data) {
   mat <- as.matrix(nldr_data[, 1:2])
 
   # Compute limits
-  min_x1 <- min(mat[, 1])
-  max_x1 <- max(mat[, 1])
-  min_x2 <- min(mat[, 2])
-  max_x2 <- max(mat[, 2])
+  min_y1 <- min(mat[, 1])
+  max_y1 <- max(mat[, 1])
+  min_y2 <- min(mat[, 2])
+  max_y2 <- max(mat[, 2])
 
-  lim1 <- c(min_x1, max_x1)
-  lim2 <- c(min_x2, max_x2)
+  lim1 <- c(min_y1, max_y1)
+  lim2 <- c(min_y2, max_y2)
 
   # Scale values
-  mat[, 1] <- (mat[, 1] - min_x1) / (max_x1 - min_x1)
-  mat[, 2] <- (mat[, 2] - min_x2) / (max_x1 - min_x1)
+  mat[, 1] <- (mat[, 1] - min_y1) / (max_y1 - min_y1)
+  mat[, 2] <- (mat[, 2] - min_y2) / (max_y1 - min_y1)
 
   # Recombine with original data (if there are other columns)
   nldr_data[, 1:2] <- mat
 
-  return(list(scaled_nldr = nldr_data, lim1 = lim1, lim2 = lim2))
+  # Add ID for scaled nldr data
+  scaled_nldr_data <- tibble::as_tibble(mat) |>
+    dplyr::mutate(ID = dplyr::row_number())
+
+  return(list(scaled_nldr = scaled_nldr_data, lim1 = lim1, lim2 = lim2))
 }
 

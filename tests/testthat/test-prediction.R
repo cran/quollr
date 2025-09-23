@@ -1,3 +1,5 @@
+set.seed(20240110)
+
 test_that("predict_emb() works", {
 
   testthat::expect_snapshot(predict_emb(highd_data = scurve,
@@ -8,18 +10,26 @@ test_that("predict_emb() works", {
 
 test_that("glance() works", {
 
-  testthat::expect_snapshot(glance(highd_data = scurve,
-                                   model_highd = scurve_model_obj$model_highd,
-                                   model_2d = scurve_model_obj$model_2d))
+  model_fit <- fit_highd_model(highd_data = scurve,
+                               nldr_data = scurve_umap,
+                               b1 = 4, q = 0.1,
+                               hd_thresh = 5)
+
+  testthat::expect_snapshot(glance(x = model_fit,
+                                   highd_data = scurve))
 
 })
 
 
 test_that("augment() works", {
 
-  testthat::expect_snapshot(augment(highd_data = scurve,
-                                    model_highd = scurve_model_obj$model_highd,
-                                    model_2d = scurve_model_obj$model_2d))
+  model_fit <- fit_highd_model(highd_data = scurve,
+                               nldr_data = scurve_umap,
+                               b1 = 4, q = 0.1,
+                               hd_thresh = 5)
+
+  testthat::expect_snapshot(augment(x = model_fit,
+                                    highd_data = scurve))
 
 })
 

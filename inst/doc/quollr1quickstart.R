@@ -11,8 +11,8 @@ library(tibble)
 ## ----message=FALSE------------------------------------------------------------
 model <- fit_highd_model(highd_data = scurve, 
                          nldr_data = scurve_umap, 
-                         b1 = 4, q = 0.1, 
-                         benchmark_highdens = 5)
+                         b1 = 21, q = 0.1, 
+                         hd_thresh = 0)
 
 ## ----message=FALSE------------------------------------------------------------
 ## 2-D model

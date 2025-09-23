@@ -2,7 +2,7 @@
 #'
 #' This function generates all possible centroids in the hexagonal grid.
 #'
-#' @param nldr_obj A list of a tibble contains scaled first and second columns
+#' @param nldr_scaled_obj A list of a tibble contains scaled first and second columns
 #' of NLDR data, and numeric vectors representing the limits of the original NLDR data.
 #' @param b1 Number of bins along the x axis.
 #' @param q The buffer amount as proportion of data range.
@@ -12,10 +12,10 @@
 #' of all hexagon bin centroids.
 #'
 #' @examples
-#' gen_centroids(nldr_obj = scurve_model_obj$nldr_obj, b1 = 5, q = 0.1)
+#' gen_centroids(nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj, b1 = 30, q = 0.1)
 #'
 #' @export
-gen_centroids <- function(nldr_obj, b1 = 5, q = 0.1){
+gen_centroids <- function(nldr_scaled_obj, b1 = 30, q = 0.1){
 
   ## To check whether b2 greater than 2
   if (b1 < 2) {
@@ -28,12 +28,12 @@ gen_centroids <- function(nldr_obj, b1 = 5, q = 0.1){
   }
 
   ## To compute the range
-  lim1 <- nldr_obj$lim1
-  lim2 <- nldr_obj$lim2
+  lim1 <- nldr_scaled_obj$lim1
+  lim2 <- nldr_scaled_obj$lim2
   r2 <- diff(lim2)/diff(lim1)
 
   ## To compute hexagonal configurations
-  bin_obj <- calc_bins_y(nldr_obj = nldr_obj, b1 = b1, q = q)
+  bin_obj <- calc_bins_y(nldr_scaled_obj = nldr_scaled_obj, b1 = b1, q = q)
 
   # To obtain the bins along the y-axis
   b2 <- bin_obj$b2
@@ -53,10 +53,10 @@ gen_centroids <- function(nldr_obj, b1 = 5, q = 0.1){
   c_x_vec <- c(c_x_vec_odd, c_x_vec_even)
 
   # To compute vertical spacing
-  a2 <- sqrt(3) * a1/2
+  vs <- sqrt(3) * a1/2
 
   # Generate y-coordinate of centroids
-  c_y_vec <- seq(s2, by = a2, length.out = b2)
+  c_y_vec <- seq(s2, by = vs, length.out = b2)
   c_y <- rep(c_y_vec, each = b1)
 
   ## Do the number of belongs y axis is even or odd and adjust the x-coordinates
@@ -103,7 +103,7 @@ gen_hex_coord <- function(centroids_data, a1) {
 #'
 #' This function assigns the data to hexagons.
 #'
-#' @param nldr_obj A list of a tibble contains scaled first and second columns
+#' @param nldr_scaled_obj A list of a tibble contains scaled first and second columns
 #' of NLDR data, and numeric vectors representing the limits of the original NLDR data.
 #' @param centroids_data The dataset with centroid coordinates.
 #'
@@ -112,13 +112,13 @@ gen_hex_coord <- function(centroids_data, a1) {
 #'
 #' @examples
 #' all_centroids_df <- scurve_model_obj$hb_obj$centroids
-#' assign_data(nldr_obj = scurve_model_obj$nldr_obj,
+#' assign_data(nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj,
 #' centroids_data = all_centroids_df)
 #'
 #' @export
-assign_data <- function(nldr_obj, centroids_data) {
+assign_data <- function(nldr_scaled_obj, centroids_data) {
 
-  scaled_nldr_df <- nldr_obj$scaled_nldr
+  scaled_nldr_df <- nldr_scaled_obj$scaled_nldr
 
   # Select embedding dimensions
   matrix_nldr <- as.matrix(scaled_nldr_df[, 1:2])
@@ -163,7 +163,7 @@ compute_std_counts <- function(scaled_nldr_hexid) {
 
 }
 
-#' Find points in hexagonal bins
+#' Grouped points in each hexagon
 #'
 #' This function maps points to their corresponding hexagonal bins.
 #'
@@ -175,10 +175,10 @@ compute_std_counts <- function(scaled_nldr_hexid) {
 #'
 #' @examples
 #' umap_with_hb_id <- scurve_model_obj$hb_obj$data_hb_id
-#' find_pts(scaled_nldr_hexid = umap_with_hb_id)
+#' group_hex_pts(scaled_nldr_hexid = umap_with_hb_id)
 #'
 #' @export
-find_pts <- function(scaled_nldr_hexid) {
+group_hex_pts <- function(scaled_nldr_hexid) {
 
   pts_df <- scaled_nldr_hexid |>
     group_by(h) |>
@@ -193,7 +193,7 @@ find_pts <- function(scaled_nldr_hexid) {
 #'
 #' This function generates the hexagonal object.
 #'
-#' @param nldr_obj A list of a tibble contains scaled first and second columns
+#' @param nldr_scaled_obj A list of a tibble contains scaled first and second columns
 #' of NLDR data, and numeric vectors representing the limits of the original NLDR data.
 #' @param b1 Number of bins along the x axis.
 #' @param q The buffer amount as proportion of data range.
@@ -210,20 +210,20 @@ find_pts <- function(scaled_nldr_hexid) {
 #'
 #'
 #' @examples
-#' hex_binning(nldr_obj = scurve_model_obj$nldr_obj, b1 = 5, q = 0.1)
+#' hex_binning(nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj, b1 = 30, q = 0.1)
 #'
 #' @export
-hex_binning <- function(nldr_obj, b1 = 5, q = 0.1) {
+hex_binning <- function(nldr_scaled_obj, b1 = 30, q = 0.1) {
 
-  scaled_nldr <- nldr_obj$scaled_nldr
+  scaled_nldr <- nldr_scaled_obj$scaled_nldr
 
   ## To compute the range
-  lim1 <- nldr_obj$lim1
-  lim2 <- nldr_obj$lim2
+  lim1 <- nldr_scaled_obj$lim1
+  lim2 <- nldr_scaled_obj$lim2
   r2 <- diff(lim2)/diff(lim1)
 
   ## To compute the number of bins along the y-axis
-  bin_obj <- calc_bins_y(nldr_obj = nldr_obj, b1 = b1, q = q)
+  bin_obj <- calc_bins_y(nldr_scaled_obj = nldr_scaled_obj, b1 = b1, q = q)
   b2 <- bin_obj$b2
 
   ## To obtain the width of the hexagon
@@ -237,19 +237,19 @@ hex_binning <- function(nldr_obj, b1 = 5, q = 0.1) {
   s2 <- -q * r2
 
   ## To generate all the centroids of the grid
-  all_centroids_df <- gen_centroids(nldr_obj = nldr_obj, b1 = b1, q = q)
+  all_centroids_df <- gen_centroids(nldr_scaled_obj = nldr_scaled_obj, b1 = b1, q = q)
 
   ## To generate the hexagon coordinates
   all_hex_coord <- gen_hex_coord(centroids_data = all_centroids_df, a1 = a1)
 
   ## To find which 2-D embedding assigned to which hexagon
-  nldr_hex_id <- assign_data(nldr_obj = nldr_obj, centroids_data = all_centroids_df)
+  nldr_hex_id <- assign_data(nldr_scaled_obj = nldr_scaled_obj, centroids_data = all_centroids_df)
 
   ## To generate standardize counts of each hexagon
   std_df <- compute_std_counts(scaled_nldr_hexid = nldr_hex_id)
 
   ## To find which points are within each hexagon
-  pts_df <- find_pts(scaled_nldr_hexid = nldr_hex_id)
+  pts_df <- group_hex_pts(scaled_nldr_hexid = nldr_hex_id)
 
   ## To generate the object of hexagon info
   hex_bin_obj <- list(a1 = a1,
@@ -264,6 +264,7 @@ hex_binning <- function(nldr_obj, b1 = 5, q = 0.1) {
                       m = length(std_df$h),
                       pts_bins = pts_df
   )
+
   class(hex_bin_obj) <- "hex_bin_obj"
 
   return(hex_bin_obj)
@@ -284,11 +285,11 @@ hex_binning <- function(nldr_obj, b1 = 5, q = 0.1) {
 #' @examples
 #' all_centroids_df <- scurve_model_obj$hb_obj$centroids
 #' counts_data <- scurve_model_obj$hb_obj$std_cts
-#' extract_hexbin_centroids(centroids_data = all_centroids_df,
+#' merge_hexbin_centroids(centroids_data = all_centroids_df,
 #' counts_data = counts_data)
 #'
 #' @export
-extract_hexbin_centroids <- function(centroids_data, counts_data) {
+merge_hexbin_centroids <- function(centroids_data, counts_data) {
 
   # Fast merge without unnecessary sorting
   merged_data <- merge(centroids_data, counts_data, by = "h", all = TRUE)
@@ -315,11 +316,11 @@ extract_hexbin_centroids <- function(centroids_data, counts_data) {
 #' all_centroids_df <- scurve_model_obj$hb_obj$centroids
 #' counts_data <- scurve_model_obj$hb_obj$std_cts
 #' umap_with_hb_id <- scurve_model_obj$hb_obj$data_hb_id
-#' extract_hexbin_mean(data_hb = umap_with_hb_id, counts_data = counts_data,
+#' merge_hexbin_mean(data_hb = umap_with_hb_id, counts_data = counts_data,
 #' centroids_data = all_centroids_df)
 #'
 #' @export
-extract_hexbin_mean <- function(data_hb, counts_data, centroids_data) {
+merge_hexbin_mean <- function(data_hb, counts_data, centroids_data) {
 
   ## To arrange the hexagon IDs
   counts_data <- counts_data |>
@@ -363,7 +364,7 @@ extract_hexbin_mean <- function(data_hb, counts_data, centroids_data) {
 #' all_centroids_df <- scurve_model_obj$hb_obj$centroids
 #' counts_data <- scurve_model_obj$hb_obj$std_cts
 #' umap_with_hb_id <- scurve_model_obj$hb_obj$data_hb_id
-#' df_bin_centroids <- extract_hexbin_mean(data_hb = umap_with_hb_id,
+#' df_bin_centroids <- merge_hexbin_mean(data_hb = umap_with_hb_id,
 #' counts_data = counts_data, centroids_data = all_centroids_df)
 #' tri_bin_centroids(centroids_data = df_bin_centroids)
 #'
@@ -437,7 +438,7 @@ calc_2d_dist <- function(trimesh_data,
 #' all_centroids_df <- scurve_model_obj$hb_obj$centroids
 #' counts_data <- scurve_model_obj$hb_obj$std_cts
 #' umap_with_hb_id <- scurve_model_obj$hb_obj$data_hb_id
-#' df_bin_centroids <- extract_hexbin_centroids(counts_data = counts_data,
+#' df_bin_centroids <- merge_hexbin_centroids(counts_data = counts_data,
 #' centroids_data = all_centroids_df)
 #' tr1_object <- tri_bin_centroids(centroids_data = df_bin_centroids)
 #' gen_edges(tri_object = tr1_object, a1 = scurve_model_obj$hb_obj$a1)
@@ -526,8 +527,8 @@ update_trimesh_index <- function(trimesh_data) {
   id_map <- setNames(seq_along(unique_values), unique_values)
 
   # Vectorized replacement using the map
-  trimesh_data$from <- id_map[as.character(trimesh_data$from)]
-  trimesh_data$to   <- id_map[as.character(trimesh_data$to)]
+  trimesh_data$from_reindexed <- id_map[as.character(trimesh_data$from)]
+  trimesh_data$to_reindexed   <- id_map[as.character(trimesh_data$to)]
 
   return(trimesh_data)
 
@@ -538,7 +539,7 @@ update_trimesh_index <- function(trimesh_data) {
 #' This function determines the number of bins along the x and y axes
 #' to obtain a specific number of non-empty bins.
 #'
-#' @param nldr_obj A list of a tibble contains scaled first and second columns
+#' @param nldr_scaled_obj A list of a tibble contains scaled first and second columns
 #' of NLDR data, and numeric vectors representing the limits of the original NLDR data.
 #' @param m The desired number of non-empty bins.
 #' @param q The buffer amount as proportion of data range.
@@ -547,17 +548,17 @@ update_trimesh_index <- function(trimesh_data) {
 #' needed to achieve a specific number of non-empty bins.
 #'
 #' @examples
-#' find_non_empty_bins(nldr_obj = scurve_model_obj$nldr_obj, m = 5)
+#' find_non_empty_bins(nldr_scaled_obj = scurve_model_obj$nldr_scaled_obj, m = 5)
 #'
 #' @export
-find_non_empty_bins <- function(nldr_obj, m = 2, q = 0.1) {
+find_non_empty_bins <- function(nldr_scaled_obj, m = 2, q = 0.1) {
 
   ## To check whether q is between a specific range
   if (!dplyr::between(q, 0.05, 0.2)) {
     cli::cli_abort("The buffer should be within 0.05 and 0.2.")
   }
 
-  scaled_nldr_data <- nldr_obj$scaled_nldr
+  scaled_nldr_data <- nldr_scaled_obj$scaled_nldr
 
   max_bins_along_axis <- ceiling(sqrt(NROW(scaled_nldr_data)))
 
@@ -568,7 +569,7 @@ find_non_empty_bins <- function(nldr_obj, m = 2, q = 0.1) {
   b1 <- num_bins_x_vec[1]
 
   ### Generate the full grid
-  hb_obj <- hex_binning(nldr_obj = nldr_obj, b1 = b1, q = q)
+  hb_obj <- hex_binning(nldr_scaled_obj = nldr_scaled_obj, b1 = b1, q = q)
 
   ## To compute the number of bins along the y-axis
   b2 <- hb_obj$bins[2]
@@ -589,7 +590,7 @@ find_non_empty_bins <- function(nldr_obj, m = 2, q = 0.1) {
     b1 <- num_bins_x_vec[2]
 
     ### Generate the full grid
-    hb_obj <- hex_binning(nldr_obj = nldr_obj, b1 = b1, q = q)
+    hb_obj <- hex_binning(nldr_scaled_obj = nldr_scaled_obj, b1 = b1, q = q)
 
     ## To compute the number of bins along the y-axis
     b2 <- hb_obj$bins[2]

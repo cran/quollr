@@ -18,6 +18,29 @@
 #' @export
 avg_highd_data <- function(highd_data, scaled_nldr_hexid) {
 
+  # If ID column does not exist, create one with row numbers
+  if (!"ID" %in% names(highd_data)) {
+    cli::cli_text("No ID column found in highd_data. Creating ID from row numbers.")
+
+    highd_data <- highd_data |>
+      dplyr::mutate(ID = dplyr::row_number())
+
+  } else{
+
+    # Check if IDs match with scaled_nldr_hexid
+    missing_ids <- setdiff(highd_data$ID, scaled_nldr_hexid$ID)
+
+    # Check that ID column is numeric
+    if (!is.numeric(highd_data$ID) | length(missing_ids) > 0) {
+      cli::cli_alert_warning("Error: ID column in highd_data contains non-numeric values or \n
+                             The following IDs in highd_data are not found in scaled_nldr_hexid.")
+
+      highd_data <- highd_data |>
+        dplyr::mutate(ID = dplyr::row_number())
+    }
+
+  }
+
   df_all <- dplyr::inner_join(highd_data, scaled_nldr_hexid, by = "ID")
 
   df_b <- df_all |>
@@ -107,8 +130,8 @@ show_langevitour <- function(point_data, edge_data,
     dplyr::filter(type == "model") ## High-d model
 
   langevitour::langevitour(point_data[1:(length(point_data)-1)],
-                           lineFrom = edge_data$from,
-                           lineTo = edge_data$to,
+                           lineFrom = edge_data$from_reindexed,
+                           lineTo = edge_data$to_reindexed,
                            group = point_data$type,
                            pointSize = append(rep(point_sizes[1], NROW(df_b)),
                                               rep(point_sizes[2], NROW(df))),

@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -347,86 +348,82 @@ to high-dimensional data and a 2-D embedding, and show how to inspect
 the key outputs.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">fit_highd_model</span>(<span class="at">highd_data =</span> scurve, </span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                         <span class="at">nldr_data =</span> scurve_umap, </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                         <span class="at">b1 =</span> <span class="dv">4</span>, <span class="at">q =</span> <span class="fl">0.1</span>, </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>                         <span class="at">benchmark_highdens =</span> <span class="dv">5</span>)</span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                         <span class="at">b1 =</span> <span class="dv">21</span>, <span class="at">q =</span> <span class="fl">0.1</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>                         <span class="at">hd_thresh =</span> <span class="dv">0</span>)</span></code></pre></div>
 <p>The output of <code>fit_highd_model()</code> is a named list
 containing several components. Let’s take a quick look at each:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## 2-D model</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>model_2d)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Rows: 12</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Rows: 251</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Columns: 5</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; $ h   &lt;int&gt; 2, 3, 5, 6, 7, 10, 11, 12, 13, 14, 15, 18</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; $ c_x &lt;dbl&gt; 0.29620130, 0.69240260, 0.09810065, 0.49430195, 0.89050325, 0.2962…</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; $ c_y &lt;dbl&gt; -0.1156801, -0.1156801, 0.2274402, 0.2274402, 0.2274402, 0.5705606…</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; $ n_h &lt;dbl&gt; 30, 14, 75, 137, 132, 12, 132, 37, 140, 176, 67, 44</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $ w_h &lt;dbl&gt; 0.030, 0.014, 0.075, 0.137, 0.132, 0.012, 0.132, 0.037, 0.140, 0.1…</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; $ h   &lt;int&gt; 58, 68, 69, 70, 71, 72, 73, 78, 79, 90, 91, 92, 93, 94, 95, 96, 98…</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; $ c_x &lt;dbl&gt; 0.7804473, 0.1641342, 0.2228307, 0.2815272, 0.3402237, 0.3989202, …</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; $ c_y &lt;dbl&gt; -0.01401484, 0.03681781, 0.03681781, 0.03681781, 0.03681781, 0.036…</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; $ n_h &lt;dbl&gt; 4, 1, 5, 6, 9, 5, 3, 3, 6, 7, 5, 2, 1, 5, 9, 1, 1, 5, 6, 10, 1, 4,…</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; $ w_h &lt;dbl&gt; 0.004, 0.001, 0.005, 0.006, 0.009, 0.005, 0.003, 0.003, 0.006, 0.0…</span></span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="do">## high-D model</span></span>
 <span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>model_highd)</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; Rows: 12</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; Rows: 251</span></span>
 <span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; Columns: 8</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; $ h  &lt;int&gt; 2, 3, 5, 6, 7, 10, 11, 12, 13, 14, 15, 18</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; $ x1 &lt;dbl&gt; 0.6209517, -0.4722570, 0.8739211, -0.1848675, -0.8900024, 0.2785481…</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; $ x2 &lt;dbl&gt; 0.1445716, 1.6006858, 1.0675059, 0.6553456, 1.2914098, 0.7134556, 0…</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; $ x3 &lt;dbl&gt; 1.73384917, 1.87127122, 1.41757699, 1.81615709, 1.03602502, -0.7218…</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; $ x4 &lt;dbl&gt; 0.0008107566, -0.0020441796, -0.0030742350, -0.0015083059, 0.000368…</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; $ x5 &lt;dbl&gt; 0.0012937320, 0.0059149121, 0.0021779674, 0.0013517560, 0.000266451…</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; $ x6 &lt;dbl&gt; -0.014829086, 0.013645828, -0.003704260, 0.001346874, 0.001513801, …</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; $ x7 &lt;dbl&gt; -1.416857e-03, 3.191434e-03, 2.633164e-04, 1.226910e-03, 2.784532e-…</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; $ h  &lt;int&gt; 58, 68, 69, 70, 71, 72, 73, 78, 79, 90, 91, 92, 93, 94, 95, 96, 98,…</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; $ x1 &lt;dbl&gt; -0.37105188, 0.95812568, 0.85450337, 0.73126005, 0.47416208, 0.2648…</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; $ x2 &lt;dbl&gt; 1.90644261, 0.08539250, 0.09171102, 0.12907776, 0.10794141, 0.12362…</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; $ x3 &lt;dbl&gt; 1.922623, 1.286348, 1.507735, 1.676232, 1.877526, 1.962058, 1.99642…</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; $ x4 &lt;dbl&gt; -0.0082718681, 0.0026502232, 0.0051225053, -0.0043335180, -0.002598…</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; $ x5 &lt;dbl&gt; 0.0018876029, 0.0170739819, 0.0003245598, 0.0021079776, 0.000127695…</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; $ x6 &lt;dbl&gt; 0.016977853, 0.087550004, -0.013016748, -0.035630709, 0.007849772, …</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; $ x7 &lt;dbl&gt; 0.0028050043, -0.0024864689, -0.0039496434, -0.0024049571, 0.001697…</span></span>
 <span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
 <span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="do">## wireframe data</span></span>
 <span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>trimesh_data)</span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; Rows: 23</span></span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; Columns: 8</span></span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; $ from       &lt;int&gt; 3, 3, 2, 4, 4, 6, 6, 7, 7, 9, 10, 1, 1, 2, 4, 6, 5, 7, 10, …</span></span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; $ to         &lt;int&gt; 4, 6, 4, 5, 7, 10, 7, 8, 11, 12, 11, 4, 2, 5, 6, 9, 8, 10, …</span></span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; $ x_from     &lt;dbl&gt; 0.09810065, 0.09810065, 0.69240260, 0.49430195, 0.49430195,…</span></span>
-<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; $ y_from     &lt;dbl&gt; 0.2274402, 0.2274402, -0.1156801, 0.2274402, 0.2274402, 0.5…</span></span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; $ x_to       &lt;dbl&gt; 0.49430195, 0.29620130, 0.49430195, 0.89050325, 0.69240260,…</span></span>
-<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; $ y_to       &lt;dbl&gt; 0.2274402, 0.5705606, 0.2274402, 0.2274402, 0.5705606, 0.91…</span></span>
-<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; $ from_count &lt;dbl&gt; 75, 75, 14, 137, 137, 12, 12, 132, 132, 140, 176, 30, 30, 1…</span></span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; $ to_count   &lt;dbl&gt; 137, 12, 137, 132, 132, 176, 132, 37, 67, 44, 67, 137, 14, …</span></span>
-<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="do">## NLDR object</span></span>
-<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>nldr_obj)</span>
-<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; List of 3</span></span>
-<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt;  $ scaled_nldr: tibble [1,000 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt;   ..$ emb1: num [1:1000] 0.277 0.697 0.779 0.173 0.218 ...</span></span>
-<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt;   ..$ emb2: num [1:1000] 0.913 0.538 0.399 0.953 0.983 ...</span></span>
-<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt;   ..$ ID  : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt;  $ lim1       : num [1:2] -9.15 8.55</span></span>
-<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt;  $ lim2       : num [1:2] -10.4 10.1</span></span>
-<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="do">## Hexagonal object</span></span>
-<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>hb_obj)</span>
-<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt; List of 11</span></span>
-<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt;  $ a1         : num 0.396</span></span>
-<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt;  $ a2         : num 0.343</span></span>
-<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co">#&gt;  $ bins       : num [1:2] 4 5</span></span>
-<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co">#&gt;  $ start_point: num [1:2] -0.1 -0.116</span></span>
-<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a><span class="co">#&gt;  $ centroids  : tibble [20 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt;   ..$ h  : int [1:20] 1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a><span class="co">#&gt;   ..$ c_x: num [1:20] -0.1 0.2962 0.6924 1.0886 0.0981 ...</span></span>
-<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="co">#&gt;   ..$ c_y: num [1:20] -0.116 -0.116 -0.116 -0.116 0.227 ...</span></span>
-<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt;  $ hex_poly   :&#39;data.frame&#39;: 120 obs. of  3 variables:</span></span>
-<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a><span class="co">#&gt;   ..$ h: int [1:120] 1 1 1 1 1 1 2 2 2 2 ...</span></span>
-<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a><span class="co">#&gt;   ..$ x: num [1:120] -0.1 -0.2981 -0.2981 -0.1 0.0981 ...</span></span>
-<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a><span class="co">#&gt;   ..$ y: num [1:120] 0.11307 -0.00131 -0.23005 -0.34443 -0.23005 ...</span></span>
-<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a><span class="co">#&gt;  $ data_hb_id : tibble [1,000 × 4] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a><span class="co">#&gt;   ..$ emb1: num [1:1000] 0.277 0.697 0.779 0.173 0.218 ...</span></span>
-<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a><span class="co">#&gt;   ..$ emb2: num [1:1000] 0.913 0.538 0.399 0.953 0.983 ...</span></span>
-<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt;   ..$ ID  : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co">#&gt;   ..$ h   : int [1:1000] 13 11 11 13 13 14 5 12 15 7 ...</span></span>
-<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="co">#&gt;  $ std_cts    : tibble [13 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a><span class="co">#&gt;   ..$ h  : int [1:13] 2 3 5 6 7 10 11 12 13 14 ...</span></span>
-<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a><span class="co">#&gt;   ..$ n_h: int [1:13] 30 14 75 137 132 12 132 37 140 176 ...</span></span>
-<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a><span class="co">#&gt;   ..$ w_h: num [1:13] 0.03 0.014 0.075 0.137 0.132 0.012 0.132 0.037 0.14 0.176 ...</span></span>
-<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a><span class="co">#&gt;  $ b          : int 20</span></span>
-<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a><span class="co">#&gt;  $ m          : int 13</span></span>
-<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a><span class="co">#&gt;  $ pts_bins   : tibble [13 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a><span class="co">#&gt;   ..$ h       : int [1:13] 2 3 5 6 7 10 11 12 13 14 ...</span></span>
-<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a><span class="co">#&gt;   ..$ pts_list:List of 13</span></span>
-<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a><span class="co">#&gt;  - attr(*, &quot;class&quot;)= chr &quot;hex_bin_obj&quot;</span></span></code></pre></div>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; Rows: 655</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; Columns: 10</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; $ from           &lt;int&gt; 69, 68, 70, 69, 90, 90, 110, 131, 131, 111, 91, 91, 111…</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt; $ to             &lt;int&gt; 90, 69, 91, 70, 111, 91, 132, 152, 132, 112, 92, 112, 1…</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt; $ x_from         &lt;dbl&gt; 0.2228307, 0.1641342, 0.2815272, 0.2228307, 0.1934824, …</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; $ y_from         &lt;dbl&gt; 0.03681781, 0.03681781, 0.03681781, 0.03681781, 0.08765…</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; $ x_to           &lt;dbl&gt; 0.1934824, 0.2228307, 0.2521789, 0.2815272, 0.2228307, …</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; $ y_to           &lt;dbl&gt; 0.08765046, 0.03681781, 0.08765046, 0.03681781, 0.13848…</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; $ from_count     &lt;dbl&gt; 5, 1, 6, 5, 7, 7, 4, 1, 1, 6, 5, 5, 6, 6, 6, 7, 3, 3, 5…</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; $ to_count       &lt;dbl&gt; 7, 5, 5, 6, 6, 5, 7, 3, 7, 6, 2, 6, 3, 1, 9, 3, 7, 3, 1…</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; $ from_reindexed &lt;int&gt; 3, 2, 4, 3, 10, 10, 22, 35, 35, 23, 11, 11, 23, 24, 4, …</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt; $ to_reindexed   &lt;int&gt; 10, 3, 11, 4, 23, 11, 36, 49, 36, 24, 12, 24, 37, 25, 5…</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="do">## NLDR object</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>nldr_obj)</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt;  NULL</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="do">## Hexagonal object</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="fu">glimpse</span>(model<span class="sc">$</span>hb_obj)</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co">#&gt; List of 11</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co">#&gt;  $ a1         : num 0.0587</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="co">#&gt;  $ a2         : num 0.0508</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co">#&gt;  $ bins       : num [1:2] 21 28</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co">#&gt;  $ start_point: num [1:2] -0.1 -0.116</span></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a><span class="co">#&gt;  $ centroids  : tibble [588 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a><span class="co">#&gt;   ..$ h  : int [1:588] 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co">#&gt;   ..$ c_x: num [1:588] -0.1 -0.0413 0.0174 0.0761 0.1348 ...</span></span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a><span class="co">#&gt;   ..$ c_y: num [1:588] -0.116 -0.116 -0.116 -0.116 -0.116 ...</span></span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a><span class="co">#&gt;  $ hex_poly   :&#39;data.frame&#39;: 3528 obs. of  3 variables:</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt;   ..$ h: int [1:3528] 1 1 1 1 1 1 2 2 2 2 ...</span></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a><span class="co">#&gt;   ..$ x: num [1:3528] -0.1 -0.1293 -0.1293 -0.1 -0.0707 ...</span></span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="co">#&gt;   ..$ y: num [1:3528] -0.0818 -0.0987 -0.1326 -0.1496 -0.1326 ...</span></span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt;  $ data_hb_id : tibble [1,000 × 4] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a><span class="co">#&gt;   ..$ emb1: num [1:1000] 0.277 0.697 0.779 0.173 0.218 ...</span></span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a><span class="co">#&gt;   ..$ emb2: num [1:1000] 0.913 0.538 0.399 0.953 0.983 ...</span></span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a><span class="co">#&gt;   ..$ ID  : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a><span class="co">#&gt;   ..$ h   : int [1:1000] 427 287 226 446 468 495 132 292 415 229 ...</span></span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a><span class="co">#&gt;  $ std_cts    : tibble [251 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a><span class="co">#&gt;   ..$ h  : int [1:251] 58 68 69 70 71 72 73 78 79 90 ...</span></span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt;   ..$ n_h: int [1:251] 4 1 5 6 9 5 3 3 6 7 ...</span></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co">#&gt;   ..$ w_h: num [1:251] 0.004 0.001 0.005 0.006 0.009 0.005 0.003 0.003 0.006 0.007 ...</span></span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a><span class="co">#&gt;  $ b          : int 588</span></span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a><span class="co">#&gt;  $ m          : int 251</span></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a><span class="co">#&gt;  $ pts_bins   : tibble [251 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a><span class="co">#&gt;   ..$ h       : int [1:251] 58 68 69 70 71 72 73 78 79 90 ...</span></span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a><span class="co">#&gt;   ..$ pts_list:List of 251</span></span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a><span class="co">#&gt;  - attr(*, &quot;class&quot;)= chr &quot;hex_bin_obj&quot;</span></span></code></pre></div>
 
 
 
