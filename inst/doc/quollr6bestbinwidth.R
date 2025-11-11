@@ -22,7 +22,7 @@ error_df_all <- error_df_all |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
   group_by(a1) |>
-  filter(RMSE == min(RMSE)) |>
+  filter(HBE == min(HBE)) |>
   ungroup()
 
 ## -----------------------------------------------------------------------------
@@ -30,13 +30,13 @@ error_df_all |>
   arrange(-a1) |>
   head(5)
 
-## ----fig.alt="RMSE Vs binw idths."--------------------------------------------
+## ----fig.alt="HBE Vs binwidths."----------------------------------------------
 ggplot(error_df_all,
          aes(x = a1,
-             y = RMSE)) +
+             y = HBE)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
-    ylab("RMSE") +
+    ylab("HBE") +
     xlab(expression(paste("binwidth (", a[1], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
