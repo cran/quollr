@@ -1,7 +1,7 @@
 Type: Package
 Package: quollr
 Title: Visualising How Nonlinear Dimension Reduction Warps Your Data
-Version: 1.0.1
+Version: 1.0.4
 Authors@R: c(
     person("Jayani P.", "Gamage", , "jayanilakshika76@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-6265-6481")),
@@ -27,7 +27,7 @@ Depends: R (>= 4.1.0)
 Imports: cli, crosstalk, dplyr, ggplot2, grid, htmltools, interp (>=
         1.1-6), langevitour, patchwork, plotly, proxy, purrr, Rcpp,
         rsample, stats, tibble, tidyr, tidyselect
-Suggests: knitr, rmarkdown, testthat (>= 3.0.0), vdiffr
+Suggests: detourr, knitr, rmarkdown, testthat (>= 3.0.0), vdiffr
 LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr
 Config/testthat/edition: 3
@@ -36,7 +36,7 @@ Language: en-GB
 LazyData: true
 RoxygenNote: 7.3.3
 NeedsCompilation: yes
-Packaged: 2025-11-11 09:28:02 UTC; jpiy0001
+Packaged: 2025-12-15 11:28:21 UTC; jpiy0001
 Author: Jayani P. Gamage [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-6265-6481>),
   Dianne Cook [aut] (ORCID: <https://orcid.org/0000-0002-3813-7155>),
@@ -47,4 +47,4 @@ Author: Jayani P. Gamage [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-0656-9789>)
 Maintainer: Jayani P. Gamage <jayanilakshika76@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-11-11 10:00:02 UTC
+Date/Publication: 2025-12-15 14:10:02 UTC

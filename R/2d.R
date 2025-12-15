@@ -503,6 +503,7 @@ gen_edges <- function(tri_object, a1) { #centroids_data
   return(edge_data)
 }
 
+
 #' Update from and to values in trimesh data
 #'
 #' This function update the from and to indexes.
@@ -532,7 +533,9 @@ update_trimesh_index <- function(trimesh_data) {
 
   return(trimesh_data)
 
+
 }
+
 
 #' Find the number of bins required to achieve required number of non-empty bins.
 #'
